@@ -9,7 +9,8 @@ AWS_REGION="${AWS_REGION:-us-east-1}"
 ECR_REPOSITORY="${ECR_REPOSITORY:-skipset-data}"
 ACCOUNT_ID="$(aws sts get-caller-identity --query Account --output text)"
 
-pip install -q ruff==0.16.* boto3
+"$PY" -m pip install -q --upgrade pip
+"$PY" -m pip install -q ruff==0.16.* boto3
 ruff check .
 python -m py_compile $(git ls-files '*.py')
 python scripts/check_schedule_states.py --environment "$ENVIRONMENT" --region "$AWS_REGION"

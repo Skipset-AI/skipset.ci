@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+pick_python() {
+  for c in python3.12 python3.11 python3; do
+    if command -v "$c" >/dev/null; then
+      echo "$c"
+      return 0
+    fi
+  done
+  return 1
+}
+PY="$(pick_python)"
+
 : "${JOB_REPO:?JOB_REPO required}"
 : "${JOB_REF:?JOB_REF required}"
 
