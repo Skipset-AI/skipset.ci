@@ -15,11 +15,13 @@
 
 ## After merge
 
-- [ ] GitHub → disable Actions on each repo
-- [ ] Billing → Actions: confirm $0 new usage
-- [ ] Test: PR opens → `data-verify` job queued
+- [x] GitHub → disable Actions on each repo
+- [ ] Billing → Actions: confirm $0 new usage (Settings → Billing; needs org admin)
+- [x] Test: PR opens → `data-verify` job queued (job 8; full pytest ran)
 - [ ] Test: push `main` on data → `data-deploy` coalesced
 - [ ] Test: admin sim fix → job id returned, PR opened
+
+Known gap: `tests/test_sim_ship.py` still expects Actions-shaped mocks; 51 failures until those tests are updated for `sim/ci.py` (cutover #975).
 
 ## Rollback (emergency only)
 
