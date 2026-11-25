@@ -1,0 +1,15 @@
+[Unit]
+Description=Skipset CI controller
+After=network.target
+
+[Service]
+Type=simple
+User=skipset-ci
+WorkingDirectory=/opt/skipset-ci
+EnvironmentFile=/etc/skipset-ci/env
+ExecStart=/opt/skipset-ci/venv/bin/uvicorn controller.app:app --host 127.0.0.1 --port 8765
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,22 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo "Building $IMAGE_TAG"
+      - aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+  build:
+    commands:
+      - docker build -t "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/skipset-data:$IMAGE_TAG" .
+      - docker tag "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/skipset-data:$IMAGE_TAG" "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/skipset-data:latest"
+  post_build:
+    commands:
+      - docker push "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/skipset-data:$IMAGE_TAG"
+      - docker push "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/skipset-data:latest"
+env:
+  variables:
+    AWS_REGION: us-east-1
+  parameter-store:
+    AWS_ACCOUNT_ID: /skipset/prod/aws_account_id
+cache:
+  paths:
+    - '/root/.cache/pip/**/*'
