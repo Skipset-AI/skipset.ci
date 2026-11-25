@@ -60,8 +60,11 @@ class Worker:
         log_path = Path(os.environ.get("SKIPSET_CI_LOG_DIR", "/var/log/skipset-ci")) / f"job-{job_id}.log"
         log_path.parent.mkdir(parents=True, exist_ok=True)
         env = os.environ.copy()
+        work_root = Path("/var/lib/skipset-ci")
+        work_root.joinpath("tmp").mkdir(parents=True, exist_ok=True)
         env.update(
             {
+                "SKIPSET_CI_TMP_ROOT": str(work_root / "tmp"),
                 "JOB_ID": str(job.id),
                 "JOB_TYPE": job.job_type,
                 "JOB_REPO": job.repo,

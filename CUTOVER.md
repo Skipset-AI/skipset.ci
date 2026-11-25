@@ -2,10 +2,10 @@
 
 ## Before merge
 
-- [ ] CI host running; `curl https://ci…/healthz`
-- [ ] CodeBuild project `skipset-data-image` green on manual run
-- [ ] `SKIPSET_CI_URL` + `SKIPSET_CI_HOOK_SECRET` on prod data API task definition
-- [ ] Webhooks registered for 3 repos
+- [x] CI host running; `curl https://ci…/healthz`
+- [x] CodeBuild project `skipset-data-image` green on manual run
+- [x] `SKIPSET_CI_URL` + `SKIPSET_CI_HOOK_SECRET` loaded via Secrets Manager on data API
+- [x] Webhooks registered for 3 repos
 
 ## Merge order
 
