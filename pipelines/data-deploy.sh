@@ -12,8 +12,8 @@ ACCOUNT_ID="$(aws sts get-caller-identity --query Account --output text)"
 "$PY" -m pip install -q --upgrade pip
 "$PY" -m pip install -q ruff==0.16.* boto3
 ruff check .
-python -m py_compile $(git ls-files '*.py')
-python scripts/check_schedule_states.py --environment "$ENVIRONMENT" --region "$AWS_REGION"
+"$PY" -m py_compile $(git ls-files '*.py')
+"$PY" scripts/check_schedule_states.py --environment "$ENVIRONMENT" --region "$AWS_REGION"
 
 SHA="$(git rev-parse HEAD)"
 IMAGE_TAG="$SHA"
