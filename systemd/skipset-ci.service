@@ -1,13 +1,12 @@
 [Unit]
 Description=Skipset CI controller
-After=network.target
+After=network.target docker.service
 
 [Service]
 Type=simple
-User=skipset-ci
-WorkingDirectory=/opt/skipset-ci
+WorkingDirectory=/opt/skipset-ci/app
 EnvironmentFile=/etc/skipset-ci/env
-ExecStart=/opt/skipset-ci/venv/bin/uvicorn controller.app:app --host 127.0.0.1 --port 8765
+ExecStart=/opt/skipset-ci/venv/bin/uvicorn controller.app:app --host 0.0.0.0 --port 8765
 Restart=on-failure
 RestartSec=5
 
