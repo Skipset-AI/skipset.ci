@@ -38,7 +38,7 @@ fi
 USERDATA=$(cat <<EOF
 #!/bin/bash
 set -euo pipefail
-dnf install -y git python3.11 python3.11-pip docker jq
+dnf install -y git python3.11 python3.11-pip python3.11-devel gcc gcc-c++ make docker jq
 systemctl enable --now docker
 mkdir -p /opt/skipset-ci /var/lib/skipset-ci /var/log/skipset-ci /etc/skipset-ci
 git clone https://github.com/Skipset-AI/skipset.ci.git /opt/skipset-ci/app
