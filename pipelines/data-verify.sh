@@ -7,8 +7,8 @@ source "$SCRIPT_DIR/lib/common.sh"
 python3 -m venv "$RUN_DIR/venv"
 # shellcheck disable=SC1091
 source "$RUN_DIR/venv/bin/activate"
-pip install -q ruff==0.16.* -r requirements.txt pytest-xdist
+pip install -q ruff==0.16.* -r requirements.txt pytest-xdist pytest-timeout
 ruff check .
 python -m py_compile $(git ls-files '*.py')
-python -m pytest tests/ -q -n auto
+python -m pytest tests/ -q -n auto --timeout=300
 python -m calls.eval || echo "::warning::voice eval quarantined"

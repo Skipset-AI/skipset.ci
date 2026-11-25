@@ -9,12 +9,33 @@ AWS_REGION="${AWS_REGION:-us-east-1}"
 ECR_REPOSITORY="${ECR_REPOSITORY:-skipset-data}"
 ACCOUNT_ID="$(aws sts get-caller-identity --query Account --output text)"
 
-pip install -q ruff==0.16.*
+pip install -q ruff==0.16.* boto3
 ruff check .
 python -m py_compile $(git ls-files '*.py')
+python scripts/check_schedule_states.py --environment "$ENVIRONMENT" --region "$AWS_REGION"
 
 SHA="$(git rev-parse HEAD)"
 IMAGE_TAG="$SHA"
+CLUSTER="skipset-$ENVIRONMENT"
+
+RUNNING=""
+for service in api process outreach detect; do
+  TD="$(aws ecs describe-services --cluster "$CLUSTER" --services "skipset-$service-$ENVIRONMENT" \
+    --query 'services[0].taskDefinition' --output text 2>/dev/null || true)"
+  [ -n "$TD" ] && [ "$TD" != "None" ] || continue
+  RUNNING="$(aws ecs describe-task-definition --task-definition "$TD" \
+    --query "taskDefinition.containerDefinitions[?contains(image, '$ECR_REPOSITORY')]|[0].image" \
+    --output text 2>/dev/null | awk -F: '{print $NF}')"
+  [ -n "$RUNNING" ] && break
+done
+if [[ "$RUNNING" =~ ^[0-9a-f]{40}$ ]] && [ "$RUNNING" != "$SHA" ] && [ -n "${GH_TOKEN:-${GITHUB_TOKEN:-}}" ]; then
+  STATUS="$(gh api "repos/${JOB_REPO}/compare/${RUNNING}...${SHA}" --jq .status 2>/dev/null || echo unknown)"
+  echo "$CLUSTER runs ${RUNNING:0:12}; deploy ${SHA:0:12} ($STATUS)"
+  if [ "$STATUS" = "behind" ]; then
+    echo "Refusing stale deploy: commit is older than what $CLUSTER runs" >&2
+    exit 0
+  fi
+fi
 
 if [ -n "${CODEBUILD_PROJECT:-}" ]; then
   BUILD_ID="$(aws codebuild start-build \
@@ -33,11 +54,11 @@ if [ -n "${CODEBUILD_PROJECT:-}" ]; then
   done
 else
   aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
-  docker build -t "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG" .
-  docker push "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG"
+  IMG="$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY"
+  docker build -t "$IMG:$IMAGE_TAG" -t "$IMG:latest" .
+  docker push "$IMG:$IMAGE_TAG"
+  docker push "$IMG:latest"
 fi
-
-CLUSTER="skipset-$ENVIRONMENT"
 REGISTRY="$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 IMAGE="$REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
