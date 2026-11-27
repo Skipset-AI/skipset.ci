@@ -38,7 +38,11 @@ fi
 USERDATA=$(cat <<EOF
 #!/bin/bash
 set -euo pipefail
-dnf install -y git python3.11 python3.11-pip python3.11-devel gcc gcc-c++ make docker jq
+dnf install -y git python3.11 python3.11-pip python3.11-devel gcc gcc-c++ make docker jq nodejs20 nodejs20-npm unzip
+alternatives --install /usr/bin/node node /usr/bin/node-20 20 || true
+alternatives --install /usr/bin/npm npm /usr/bin/npm-20 20 || true
+alternatives --install /usr/bin/npx npx /usr/bin/npx-20 20 || true
+curl -fsSL https://bun.sh/install | BUN_INSTALL=/opt/skipset-ci/bun bash -s bun-v1.3.5
 systemctl enable --now docker
 mkdir -p /opt/skipset-ci /var/lib/skipset-ci /var/log/skipset-ci /etc/skipset-ci
 git clone https://github.com/Skipset-AI/skipset.ci.git /opt/skipset-ci/app
@@ -56,6 +60,11 @@ GITHUB_WEBHOOK_SECRET=\$WH
 GITHUB_TOKEN=\$GH
 GITHUB_SIM_TOKEN=\$GH
 AWS_REGION=us-east-1
+HOME=/root
+BUN_INSTALL=/opt/skipset-ci/bun
+AMPLIFY_APP_ID=d3qwoijyp09jpi
+BACKEND_DEPLOY_ROLE_ARN=arn:aws:iam::042470865474:role/skipset-backend-deploy
+SKIPSET_CI_URL=https://ci.skipset.co
 ENV
 cp /opt/skipset-ci/app/systemd/skipset-ci.service /etc/systemd/system/
 systemctl daemon-reload
