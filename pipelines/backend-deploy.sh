@@ -72,6 +72,9 @@ creds="$(aws sts assume-role --role-arn "$BACKEND_DEPLOY_ROLE_ARN" \
 read -r AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN <<<"$creds"
 export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
 
+# ampx pipeline-deploy refuses to run unless CI is set (Actions set it implicitly).
+export CI=true
+
 HASH_BEFORE="$(sha256sum amplify_outputs.json 2>/dev/null | awk '{print $1}' || echo none)"
 
 npm_config_user_agent=npm npx ampx pipeline-deploy --branch "$JOB_REF" --app-id "$AMPLIFY_APP_ID"
