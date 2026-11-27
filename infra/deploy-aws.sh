@@ -14,7 +14,7 @@ HOOK_SECRET="${SKIPSET_CI_HOOK_SECRET:-$(openssl rand -hex 24)}"
 GH_WEBHOOK_SECRET="${GITHUB_WEBHOOK_SECRET:-$(openssl rand -hex 16)}"
 
 echo "Ensuring Secrets Manager entries..."
-for pair in "skipset/skipset-ci-hook-secret:$HOOK_SECRET" "skipset/skipset-ci-url:https://ci.skipset.ai"; do
+for pair in "skipset/skipset-ci-hook-secret:$HOOK_SECRET" "skipset/skipset-ci-url:https://ci.skipset.co"; do
   name="${pair%%:*}"
   val="${pair#*:}"
   if aws secretsmanager describe-secret --secret-id "$name" &>/dev/null; then

@@ -16,7 +16,7 @@ pip install -r /path/to/skipset.ci/requirements.txt
 
 export SKIPSET_CI_DB=/var/lib/skipset-ci/jobs.sqlite3
 export SKIPSET_CI_HOOK_SECRET='…'          # same as SKIPSET_CI_HOOK_SECRET on data ECS
-export SKIPSET_CI_PUBLIC_URL='https://ci.skipset.ai'
+export SKIPSET_CI_PUBLIC_URL='https://ci.skipset.co'
 export GITHUB_WEBHOOK_SECRET='…'
 export GITHUB_TOKEN='…'                    # read private repos
 export CODEBUILD_PROJECT='skipset-data-image'

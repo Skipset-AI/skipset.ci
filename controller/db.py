@@ -152,11 +152,22 @@ class JobStore:
             raise KeyError(job_id)
         return _row_to_job(row)
 
+    # Deploy/sim jobs must not sit behind PR verify (full pytest can run 30+ min each).
+    _DEPLOY_JOB_TYPES = frozenset(
+        {"data-deploy", "backend-deploy", "web-sync", "sim-fix"}
+    )
+
     def claim_next(self) -> Optional[Job]:
         now = time.time()
+        deploy_types = ",".join(f"'{t}'" for t in sorted(self._DEPLOY_JOB_TYPES))
         with self._conn() as conn:
             row = conn.execute(
-                "SELECT * FROM jobs WHERE status='queued' ORDER BY id ASC LIMIT 1"
+                f"""
+                SELECT * FROM jobs WHERE status='queued'
+                ORDER BY CASE WHEN job_type IN ({deploy_types}) THEN 0 ELSE 1 END,
+                         id ASC
+                LIMIT 1
+                """
             ).fetchone()
             if not row:
                 return None

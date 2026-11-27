@@ -82,7 +82,7 @@ done
 
 if [ "$ENVIRONMENT" = "prod" ]; then
   for _ in {1..12}; do
-    curl -fsS "https://api.skipset.ai/healthz" && exit 0
+    curl -fsS "https://api.skipset.co/healthz" && exit 0
     sleep 10
   done
   exit 1

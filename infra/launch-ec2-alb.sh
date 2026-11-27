@@ -51,7 +51,7 @@ cat > /etc/skipset-ci/env <<ENV
 SKIPSET_CI_DB=/var/lib/skipset-ci/jobs.sqlite3
 SKIPSET_CI_LOG_DIR=/var/log/skipset-ci
 SKIPSET_CI_HOOK_SECRET=\$HOOK
-SKIPSET_CI_PUBLIC_URL=https://ci.skipset.ai
+SKIPSET_CI_PUBLIC_URL=https://ci.skipset.co
 GITHUB_WEBHOOK_SECRET=\$WH
 GITHUB_TOKEN=\$GH
 GITHUB_SIM_TOKEN=\$GH
@@ -76,8 +76,8 @@ if [ "$IID" = "None" ] || [ -z "$IID" ]; then
 fi
 
 aws elbv2 register-targets --target-group-arn "$TG_ARN" --targets Id="$IID",Port=8765
-aws secretsmanager put-secret-value --secret-id skipset/skipset-ci-url --secret-string "https://ci.skipset.ai"
+aws secretsmanager put-secret-value --secret-id skipset/skipset-ci-url --secret-string "https://ci.skipset.co"
 
 echo "ALB DNS: $ALB_DNS"
-echo "Add DNS: ci.skipset.ai CNAME -> $ALB_DNS"
+echo "Add DNS: ci.skipset.co CNAME -> $ALB_DNS"
 echo "Instance: $IID"
