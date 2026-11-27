@@ -12,6 +12,11 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 : "${AMPLIFY_APP_ID:?AMPLIFY_APP_ID required}"
 : "${BACKEND_DEPLOY_ROLE_ARN:?BACKEND_DEPLOY_ROLE_ARN required}"
 
+# Tests run before the deploy settings below: some read them from process.env.
+bun install --frozen-lockfile
+npx tsc --noEmit
+bun test
+
 case "$JOB_REF" in
   main)
     export SKIPSET_DATA_URL="https://api.skipset.ai"
@@ -59,10 +64,6 @@ if [ "${#missing[@]}" -gt 0 ]; then
   echo "backend-deploy: refusing to deploy $JOB_REF, bad settings: ${missing[*]}" >&2
   exit 1
 fi
-
-bun install --frozen-lockfile
-npx tsc --noEmit
-bun test
 
 # The instance role only assumes the deploy role; Amplify/CDK rights live there.
 creds="$(aws sts assume-role --role-arn "$BACKEND_DEPLOY_ROLE_ARN" \
