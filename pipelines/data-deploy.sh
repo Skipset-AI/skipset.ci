@@ -64,7 +64,7 @@ REGISTRY="$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 IMAGE="$REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
 REFRESHED=0
-for service in api detect process outreach; do
+for service in api detect process outreach outreach-send; do
   NAME="skipset-$service-$ENVIRONMENT"
   STATUS="$(aws ecs describe-services --cluster "$CLUSTER" --services "$NAME" --query 'services[0].status' --output text 2>/dev/null || echo MISSING)"
   [ "$STATUS" = "ACTIVE" ] || continue
