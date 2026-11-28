@@ -23,6 +23,9 @@ export PIP_CACHE_DIR="$WORK/pip-cache"
 export XDG_CACHE_HOME="$WORK/pip-cache"
 RUN_DIR="$WORK/job-${JOB_ID:-0}-$$"
 mkdir -p "$RUN_DIR"
+# Each job clones fresh, so its folder goes when the job ends. Kept folders filled
+# the root volume's inodes and every clone failed with "No space left on device".
+trap 'cd / && rm -rf "$RUN_DIR"' EXIT
 cd "$RUN_DIR"
 
 repo_slug="${JOB_REPO#*/}"
